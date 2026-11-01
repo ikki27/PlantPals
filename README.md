@@ -22,7 +22,6 @@ Vsaka rastlina ima lastna navodila za oskrbo, med varstvom varuh vodi *dnevnik o
 - **Lastnik** — vnaša rastline z navodili, odpira zahteve za varstvo, pregleduje kandidate, spremlja dnevnik, potrdi vrnitev.
 - **Varuh** — nastavi razpoložljivost (obdobje + mesto/regija), pregleduje ujemajoče zahteve, se javi, med varstvom piše dnevnik oskrbe.
 - **Administrator** — upravlja uporabniške račune, moderira vsebino, posreduje pri zastalih varstvih.
----
  
 ## Uporabljene tehnologije
  
@@ -33,32 +32,9 @@ Vsaka rastlina ima lastna navodila za oskrbo, med varstvom varuh vodi *dnevnik o
 | **Podatkovna baza** | MongoDB + Mongoose |
 | **Avtentikacija** | JWT prek Passport.js (`@nestjs/passport`, `passport-jwt`), bcrypt za gesla, role-based dostop prek Guards |
 | **Validacija** | `class-validator` |
-| **Testiranje** | Jest |
 | **Lokalni razvoj** | Docker Compose (API + MongoDB), `.env` |
  
 **Arhitektura:** ločen SPA + REST API. Komunikacija SPA ↔ API poteka prek REST/JSON čez HTTPS, vsaka zahteva nosi JWT v `Authorization` glavi; API ↔ MongoDB prek Mongoose.
- 
----
- 
-## Zagon (lokalno)
- 
-> Direktoriji `frontend/` in `backend/` so zaenkrat še prazni — koda sledi v naslednjih korakih projekta.
- 
-Predvideni način zagona (ko bo koda postavljena):
- 
-```bash
-# 1. Kloniraj repozitorij
-git clone https://github.com/ikki27/PlantPals.git
-cd PlantPals
- 
-# 2. Nastavi okoljske spremenljivke
-cp .env.example .env    # nato uredi vrednosti
- 
-# 3. Dvigni okolje (API + MongoDB)
-docker compose up
-```
- 
-Konfiguracija (povezava do baze, JWT skrivnost) se bere iz `.env` — ta datoteka se **ne** commita; glej `.env.example` za seznam spremenljivk.
  
 ---
  
@@ -71,6 +47,5 @@ Celotna projektna dokumentacija je v mapi [`docs/`](docs/):
 - [03 — Podatkovni model](docs/03-podatkovni-model.md) — entitete, polja, povezave
 - [04 — Arhitektura in tehnološki sklad](docs/04-arhitektura-in-tehnoloski-sklad.md) — arhitektura, komunikacija, odločitve
 - [05 — Uporabniške zgodbe](docs/05-uporabniske-zgodbe.md) — user stories in acceptance criteria
-- [06 — Wireframes](docs/06-wireframes.md) — skice vmesnika
-Arhitekturne odločitve (ADR) so v [`docs/adr/`](docs/adr/).
+- [06 — Wireframes](docs/06-wireframes.md) — skice vmesnika.
  
