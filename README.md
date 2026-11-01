@@ -1,2 +1,76 @@
 # PlantPals
-PlantPals – spletna aplikacija za začasno varstvo sobnih rastlin (povezovanje lastnikov in varuhov). React + NestJS + MongoDB.
+ 
+**PlantPals** je spletna aplikacija za zanesljivo, sledljivo in dokumentirano začasno varstvo sobnih rastlin. Ko gre lastnik na dopust ali službeno pot, ga aplikacija poveže z *varuhom*, ki je na voljo v ustreznem obdobju in na ustrezni lokaciji (po mestu/regiji) — namesto neformalnih in nezanesljivih dogovorov s sosedi.
+ 
+Vsaka rastlina ima lastna navodila za oskrbo, med varstvom varuh vodi *dnevnik oskrbe*, ob koncu pa lastnik *potrdi vrnitev*, da je zaključek jasen in dokumentiran za obe strani.
+ 
+---
+ 
+## Ključne funkcionalnosti
+ 
+- **Profili rastlin** z navodili za oskrbo (vrsta, pogostost zalivanja, svetlobne potrebe, opombe).
+- **Zahteve za varstvo** za določeno obdobje in lokacijo, z izborom ene ali več rastlin.
+- **Ujemanje** zahtev z varuhi po *lokaciji* in *prekrivanju razpoložljivosti* z zahtevanim obdobjem.
+- **Javljanje in dodelitev varuha** — varuhi se javijo, lastnik izbere; dodelitev je atomarna.
+- **Statusni potek varstva** z nadzorovanimi prehodi: `zahtevano → sprejeto → v teku → vrnjeno → potrjeno` (ter *preklicano* pred začetkom).
+- **Dnevnik oskrbe** — varuh beleži vnose (datum, opravilo, opombe), lastnik jih spremlja.
+- **Potrditev vrnitve** s strani lastnika, ki zaključi varstvo.
+- **Vlogovno ločen dostop** (lastnik / varuh / administrator) z ustreznimi pravicami.
+- **E-poštna obvestila** ob ključnih dogodkih.
+## Uporabniške vloge
+ 
+- **Lastnik** — vnaša rastline z navodili, odpira zahteve za varstvo, pregleduje kandidate, spremlja dnevnik, potrdi vrnitev.
+- **Varuh** — nastavi razpoložljivost (obdobje + mesto/regija), pregleduje ujemajoče zahteve, se javi, med varstvom piše dnevnik oskrbe.
+- **Administrator** — upravlja uporabniške račune, moderira vsebino, posreduje pri zastalih varstvih.
+---
+ 
+## Uporabljene tehnologije
+ 
+| Del | Tehnologija |
+|---|---|
+| **Frontend** | React + Vite (SPA), Axios, React Router |
+| **Backend** | NestJS (TypeScript, Node.js) — plastni monolit (moduli: auth, users, plants, assignments) |
+| **Podatkovna baza** | MongoDB + Mongoose |
+| **Avtentikacija** | JWT prek Passport.js (`@nestjs/passport`, `passport-jwt`), bcrypt za gesla, role-based dostop prek Guards |
+| **Validacija** | `class-validator` |
+| **Testiranje** | Jest |
+| **Lokalni razvoj** | Docker Compose (API + MongoDB), `.env` |
+ 
+**Arhitektura:** ločen SPA + REST API. Komunikacija SPA ↔ API poteka prek REST/JSON čez HTTPS, vsaka zahteva nosi JWT v `Authorization` glavi; API ↔ MongoDB prek Mongoose.
+ 
+---
+ 
+## Zagon (lokalno)
+ 
+> Direktoriji `frontend/` in `backend/` so zaenkrat še prazni — koda sledi v naslednjih korakih projekta.
+ 
+Predvideni način zagona (ko bo koda postavljena):
+ 
+```bash
+# 1. Kloniraj repozitorij
+git clone https://github.com/ikki27/PlantPals.git
+cd PlantPals
+ 
+# 2. Nastavi okoljske spremenljivke
+cp .env.example .env    # nato uredi vrednosti
+ 
+# 3. Dvigni okolje (API + MongoDB)
+docker compose up
+```
+ 
+Konfiguracija (povezava do baze, JWT skrivnost) se bere iz `.env` — ta datoteka se **ne** commita; glej `.env.example` za seznam spremenljivk.
+ 
+---
+ 
+## Dokumentacija
+ 
+Celotna projektna dokumentacija je v mapi [`docs/`](docs/):
+ 
+- [01 — Zasnova rešitve](docs/01-zasnova-resitve.md) — namen, ciljni uporabniki, opis delovanja
+- [02 — Funkcionalnosti in obseg](docs/02-funkcionalnosti-in-obseg.md) — vloge, funkcionalnosti, MVP, out of scope
+- [03 — Podatkovni model](docs/03-podatkovni-model.md) — entitete, polja, povezave
+- [04 — Arhitektura in tehnološki sklad](docs/04-arhitektura-in-tehnoloski-sklad.md) — arhitektura, komunikacija, odločitve
+- [05 — Uporabniške zgodbe](docs/05-uporabniske-zgodbe.md) — user stories in acceptance criteria
+- [06 — Wireframes](docs/06-wireframes.md) — skice vmesnika
+Arhitekturne odločitve (ADR) so v [`docs/adr/`](docs/adr/).
+ 
