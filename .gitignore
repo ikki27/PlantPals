@@ -19,5 +19,3 @@ vite.config.*.timestamp-*
 .vite/
 
 .vscode/
-.idea/
-.DS_Store
