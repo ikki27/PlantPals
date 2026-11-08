@@ -47,6 +47,44 @@ export class UsersService {
       .exec();
   }
 
+  setCity(id: string, city: string): Promise<UserDocument | null> {
+    if (!isValidObjectId(id)) return Promise.resolve(null);
+    return this.userModel
+      .findByIdAndUpdate(id, { city }, { new: true })
+      .exec();
+  }
+
+  addAvailability(
+    id: string,
+    from: Date,
+    to: Date,
+  ): Promise<UserDocument | null> {
+    if (!isValidObjectId(id)) return Promise.resolve(null);
+    return this.userModel
+      .findByIdAndUpdate(
+        id,
+        { $push: { availability: { from, to } } },
+        { new: true },
+      )
+      .exec();
+  }
+
+  removeAvailability(
+    id: string,
+    windowId: string,
+  ): Promise<UserDocument | null> {
+    if (!isValidObjectId(id) || !isValidObjectId(windowId)) {
+      return Promise.resolve(null);
+    }
+    return this.userModel
+      .findOneAndUpdate(
+        { _id: id, 'availability._id': windowId },
+        { $pull: { availability: { _id: windowId } } },
+        { new: true },
+      )
+      .exec();
+  }
+
   create(data: CreateUserData): Promise<UserDocument> {
     return this.userModel.create(data);
   }
