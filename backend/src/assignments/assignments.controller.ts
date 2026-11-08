@@ -12,6 +12,7 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../users/user-role.enum';
 import { AssignmentsService } from './assignments.service';
+import { AssignSitterDto } from './dto/assign-sitter.dto';
 import { CreateAssignmentDto } from './dto/create-assignment.dto';
 
 @Controller('assignments')
@@ -41,5 +42,28 @@ export class AssignmentsController {
   @HttpCode(HttpStatus.OK)
   apply(@CurrentUser() user: AuthUser, @Param('id') id: string) {
     return this.assignmentsService.apply(id, user.userId);
+  }
+
+  @Get(':id/applicants')
+  @Roles(UserRole.Owner)
+  findApplicants(@CurrentUser() user: AuthUser, @Param('id') id: string) {
+    return this.assignmentsService.findApplicants(id, user.userId);
+  }
+
+  @Post(':id/assign')
+  @Roles(UserRole.Owner)
+  @HttpCode(HttpStatus.OK)
+  assign(
+    @CurrentUser() user: AuthUser,
+    @Param('id') id: string,
+    @Body() dto: AssignSitterDto,
+  ) {
+    return this.assignmentsService.assignSitter(id, user.userId, dto.sitterId);
+  }
+
+  @Get(':id')
+  @Roles(UserRole.Owner)
+  findOne(@CurrentUser() user: AuthUser, @Param('id') id: string) {
+    return this.assignmentsService.findOneForOwner(id, user.userId);
   }
 }
