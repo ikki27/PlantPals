@@ -3,6 +3,7 @@ import ProtectedRoute from './auth/ProtectedRoute';
 import RoleRoute from './auth/RoleRoute';
 import Layout from './components/Layout';
 import AdminUsersPage from './pages/AdminUsersPage';
+import AssignmentDetailPage from './pages/AssignmentDetailPage';
 import AssignmentFormPage from './pages/AssignmentFormPage';
 import AssignmentsListPage from './pages/AssignmentsListPage';
 import AvailabilityPage from './pages/AvailabilityPage';
@@ -32,6 +33,7 @@ export default function App() {
             <Route path="/owner/plants/:id/edit" element={<PlantFormPage />} />
             <Route path="/owner/requests" element={<AssignmentsListPage />} />
             <Route path="/owner/requests/new" element={<AssignmentFormPage />} />
+            <Route path="/owner/requests/:id" element={<AssignmentDetailPage />} />
           </Route>
           <Route element={<RoleRoute roles={['sitter']} />}>
             <Route path="/sitter" element={<SitterDashboardPage />} />

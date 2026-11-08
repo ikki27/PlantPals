@@ -44,16 +44,23 @@ export default function AssignmentsListPage() {
       {assignments && assignments.length > 0 && (
         <div className="assignment-list">
           {assignments.map((a) => (
-            <div key={a.id} className="card assignment-card">
+            <Link key={a.id} to={`/owner/requests/${a.id}`} className="card assignment-card card-link">
               <div className="assignment-main">
                 <strong>📅 {formatPeriod(a.startDate, a.endDate)}</strong>
                 <span>📍 {a.city}</span>
                 <span className="muted">
                   🪴 {a.plants.map((p) => p.name).join(', ') || 'Rastline niso več na voljo'}
                 </span>
+                {a.sitter ? (
+                  <span>🧑‍🌾 Varuh: {a.sitter.displayName}</span>
+                ) : (
+                  a.status === 'zahtevano' && (
+                    <span className="muted">👥 Kandidati: {a.applicantsCount}</span>
+                  )
+                )}
               </div>
               <span className={`status-badge status-${a.status}`}>{STATUS_LABELS[a.status]}</span>
-            </div>
+            </Link>
           ))}
         </div>
       )}

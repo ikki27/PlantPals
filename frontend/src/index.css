@@ -356,6 +356,20 @@ a.btn-primary {
   gap: 0.3rem;
 }
 
+.card-link {
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.15s;
+}
+
+.card-link:hover {
+  border-color: var(--green);
+}
+
+.detail-header {
+  margin-top: 1rem;
+}
+
 .assignment-actions {
   display: flex;
   flex-wrap: wrap;
