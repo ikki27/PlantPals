@@ -1,7 +1,9 @@
+import { ArrowRight, Droplets, Sprout, Sun } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { getErrorMessages } from '../api/errors';
 import { getPlants, type Plant } from '../api/plants';
+import Meta from '../components/Meta';
 
 export default function PlantsListPage() {
   const location = useLocation();
@@ -20,8 +22,8 @@ export default function PlantsListPage() {
     <>
       <div className="page-header">
         <h1>Moje rastline</h1>
-        <Link to="/owner/plants/new" className="btn-primary btn-inline">
-          + Dodaj rastlino
+        <Link to="/plants/new" className="btn-primary btn-inline">
+          Dodaj rastlino
         </Link>
       </div>
 
@@ -32,19 +34,27 @@ export default function PlantsListPage() {
       {plants && plants.length === 0 && (
         <div className="card empty-state">
           <p>Še nimate nobene rastline.</p>
-          <Link to="/owner/plants/new">Dodajte prvo rastlino</Link>
+          <Link to="/plants/new">Dodajte prvo rastlino</Link>
         </div>
       )}
 
       {plants && plants.length > 0 && (
         <div className="plant-grid">
           {plants.map((plant) => (
-            <Link key={plant.id} to={`/owner/plants/${plant.id}/edit`} className="plant-card card">
-              <h3>🪴 {plant.name}</h3>
-              <p className="muted">{plant.species || 'Vrsta ni navedena'}</p>
-              <p>💧 Zalivanje vsakih {plant.wateringFrequencyDays} dni</p>
-              {plant.lightNeeds && <p>☀️ {plant.lightNeeds}</p>}
-              <span className="plant-card-edit">Uredi →</span>
+            <Link key={plant.id} to={`/plants/${plant.id}/edit`} className="plant-card card">
+              <span className="plant-avatar">
+                <Sprout size={34} strokeWidth={1.3} aria-hidden />
+              </span>
+              <h3>{plant.name}</h3>
+              <p className="muted plant-species">{plant.species || 'Vrsta ni navedena'}</p>
+              <div className="plant-facts">
+                <Meta icon={Droplets}>Vsakih {plant.wateringFrequencyDays} dni</Meta>
+                {plant.lightNeeds && <Meta icon={Sun}>{plant.lightNeeds}</Meta>}
+              </div>
+              <span className="plant-card-edit">
+                Uredi
+                <ArrowRight size={16} strokeWidth={1.75} aria-hidden />
+              </span>
             </Link>
           ))}
         </div>

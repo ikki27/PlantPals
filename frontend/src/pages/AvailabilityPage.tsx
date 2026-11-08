@@ -1,5 +1,7 @@
+import { CalendarDays } from 'lucide-react';
 import { useEffect, useState, type FormEvent } from 'react';
 import { formatPeriod } from '../api/assignments';
+import Meta from '../components/Meta';
 import {
   addWindow,
   getAvailability,
@@ -136,7 +138,7 @@ export default function AvailabilityPage() {
           <ul className="window-list">
             {availability.windows.map((w) => (
               <li key={w.id}>
-                <span>📅 {formatPeriod(w.from, w.to)}</span>
+                <Meta icon={CalendarDays}>{formatPeriod(w.from, w.to)}</Meta>
                 <button
                   type="button"
                   className="btn-link btn-danger"
@@ -175,7 +177,7 @@ export default function AvailabilityPage() {
             />
           </label>
           <button type="submit" className="btn-primary btn-inline" disabled={addingWindow}>
-            {addingWindow ? 'Dodajam ...' : '+ Dodaj obdobje'}
+            {addingWindow ? 'Dodajam ...' : 'Dodaj obdobje'}
           </button>
         </form>
         {windowError && <small className="error">{windowError}</small>}
