@@ -1,5 +1,6 @@
+import { CalendarDays, Check, MapPin, Sprout, UserRound } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import {
   assignSitter,
   confirmReturn,
@@ -11,7 +12,9 @@ import {
   type Assignment,
 } from '../api/assignments';
 import { getErrorMessages } from '../api/errors';
+import BackLink from '../components/BackLink';
 import ConfirmedNote from '../components/ConfirmedNote';
+import Meta from '../components/Meta';
 import StatusSteps from '../components/StatusSteps';
 
 export default function AssignmentDetailPage() {
@@ -72,7 +75,7 @@ export default function AssignmentDetailPage() {
     return (
       <>
         <div className="alert alert-error">{loadError}</div>
-        <Link to="/owner/requests">← Nazaj na zahteve</Link>
+        <BackLink to="/requests">Nazaj na zahteve</BackLink>
       </>
     );
   }
@@ -82,7 +85,7 @@ export default function AssignmentDetailPage() {
 
   return (
     <>
-      <Link to="/owner/requests">← Nazaj na zahteve</Link>
+      <BackLink to="/requests">Nazaj na zahteve</BackLink>
 
       <div className="page-header detail-header">
         <h1>Zahteva za varstvo</h1>
@@ -115,10 +118,16 @@ export default function AssignmentDetailPage() {
 
       <section className="card section">
         <div className="assignment-main">
-          <strong>📅 {formatPeriod(assignment.startDate, assignment.endDate)}</strong>
-          <span>📍 {assignment.city}</span>
-          <span className="muted">🪴 {assignment.plants.map((p) => p.name).join(', ')}</span>
-          {assignment.sitter && <span>🧑‍🌾 Varuh: {assignment.sitter.displayName}</span>}
+          <Meta icon={CalendarDays} tone="strong">
+            {formatPeriod(assignment.startDate, assignment.endDate)}
+          </Meta>
+          <Meta icon={MapPin}>{assignment.city}</Meta>
+          <Meta icon={Sprout} tone="muted">
+            {assignment.plants.map((p) => p.name).join(', ')}
+          </Meta>
+          {assignment.sitter && (
+            <Meta icon={UserRound}>Varuh: {assignment.sitter.displayName}</Meta>
+          )}
         </div>
       </section>
 
@@ -138,7 +147,10 @@ export default function AssignmentDetailPage() {
                     <span className="muted"> · {applicant.city || 'mesto ni navedeno'}</span>
                   </span>
                   {isChosen ? (
-                    <span className="status-badge status-potrjeno">✓ Izbran</span>
+                    <span className="status-badge status-potrjeno with-icon">
+                      <Check size={14} strokeWidth={2} aria-hidden />
+                      Izbran
+                    </span>
                   ) : (
                     canAssign && (
                       <button

@@ -100,7 +100,7 @@ export default function PlantFormPage() {
       } else {
         await createPlant(toInput(form));
       }
-      navigate('/owner/plants', {
+      navigate('/plants', {
         state: { message: isEdit ? 'Spremembe so shranjene.' : 'Rastlina je dodana.' },
       });
     } catch (err) {
@@ -191,7 +191,7 @@ export default function PlantFormPage() {
         </label>
 
         <div className="form-actions">
-          <Link to="/owner/plants" className="btn-secondary">
+          <Link to="/plants" className="btn-secondary">
             Prekliči
           </Link>
           <button type="submit" className="btn-primary" disabled={submitting}>

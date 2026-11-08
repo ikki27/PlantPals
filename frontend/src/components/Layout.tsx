@@ -1,60 +1,58 @@
+import { Leaf } from 'lucide-react';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { hasRole } from '../auth/homePath';
+import UserMenu from './UserMenu';
 
 export default function Layout() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
+  const isOwner = hasRole(user?.roles, 'owner');
+  const isSitter = hasRole(user?.roles, 'sitter');
+  const isAdmin = hasRole(user?.roles, 'admin');
 
   return (
     <>
       <header className="navbar">
-        <Link to="/" className="brand">
-          🌿 PlantPals
-        </Link>
-        <nav>
-          <NavLink to="/" end>
-            Domov
-          </NavLink>
-          {hasRole(user?.roles, 'owner') && (
-            <>
-              <NavLink to="/owner" end>
-                Lastnik
-              </NavLink>
-              <NavLink to="/owner/plants">Moje rastline</NavLink>
-              <NavLink to="/owner/requests">Zahteve</NavLink>
-            </>
-          )}
-          {hasRole(user?.roles, 'sitter') && (
-            <>
-              <NavLink to="/sitter" end>
-                Varuh
-              </NavLink>
-              <NavLink to="/sitter/availability">Razpoložljivost</NavLink>
-              <NavLink to="/sitter/requests">Odprte zahteve</NavLink>
-              <NavLink to="/sitter/assignments">Moja varstva</NavLink>
-            </>
-          )}
-          {hasRole(user?.roles, 'admin') && <NavLink to="/admin">Administracija</NavLink>}
-          {!user && (
-            <>
-              <NavLink to="/register">Registracija</NavLink>
-              <NavLink to="/login">Prijava</NavLink>
-            </>
-          )}
-        </nav>
+        <div className="navbar-inner">
+          <Link to="/" className="brand">
+            <Leaf size={22} strokeWidth={1.75} aria-hidden />
+            PlantPals
+          </Link>
 
-        {user && (
-          <div className="user-menu">
-            <span className="muted">{user.displayName}</span>
-            <button type="button" className="btn-link" onClick={logout}>
-              Odjava
-            </button>
-          </div>
-        )}
+          {user ? (
+            <>
+              <nav className="main-nav">
+                {(isOwner || isSitter) && (
+                  <NavLink to="/" end>
+                    Domov
+                  </NavLink>
+                )}
+                {isOwner && <NavLink to="/plants">Moje rastline</NavLink>}
+                {(isOwner || isSitter) && <NavLink to="/requests">Zahteve</NavLink>}
+                {isSitter && <NavLink to="/care">Moja varstva</NavLink>}
+                {isAdmin && <NavLink to="/admin">Administracija</NavLink>}
+              </nav>
+              <UserMenu />
+            </>
+          ) : (
+            <div className="guest-actions">
+              <Link to="/login" className="btn-ghost">
+                Prijava
+              </Link>
+              <Link to="/register" className="btn-primary btn-inline">
+                Registracija
+              </Link>
+            </div>
+          )}
+        </div>
       </header>
       <main>
         <Outlet />
       </main>
+      <footer className="site-footer">
+        <span>© {new Date().getFullYear()} PlantPals</span>
+        <span>Varstvo sobnih rastlin</span>
+      </footer>
     </>
   );
 }

@@ -54,7 +54,7 @@ export default function AssignmentFormPage() {
     setSubmitting(true);
     try {
       await createAssignment({ startDate, endDate, city: city.trim(), plantIds });
-      navigate('/owner/requests', { state: { message: 'Zahteva za varstvo je oddana.' } });
+      navigate('/requests', { state: { message: 'Zahteva za varstvo je oddana.' } });
     } catch (err) {
       setServerErrors(getErrorMessages(err));
       setSubmitting(false);
@@ -68,7 +68,7 @@ export default function AssignmentFormPage() {
       <div className="form-card card empty-state">
         <h1>Nova zahteva za varstvo</h1>
         <p>Za oddajo zahteve morate imeti vsaj eno rastlino.</p>
-        <Link to="/owner/plants/new">Dodajte rastlino</Link>
+        <Link to="/plants/new">Dodajte rastlino</Link>
       </div>
     );
   }
@@ -150,7 +150,7 @@ export default function AssignmentFormPage() {
         </fieldset>
 
         <div className="form-actions">
-          <Link to="/owner/requests" className="btn-secondary">
+          <Link to="/requests" className="btn-secondary">
             Prekliči
           </Link>
           <button type="submit" className="btn-primary" disabled={submitting}>

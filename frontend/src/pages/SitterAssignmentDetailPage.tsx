@@ -1,5 +1,6 @@
+import { CalendarDays, MapPin, Sprout, UserRound } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import {
   formatDate,
   formatPeriod,
@@ -10,7 +11,9 @@ import {
   type Assignment,
 } from '../api/assignments';
 import { getErrorMessages } from '../api/errors';
+import BackLink from '../components/BackLink';
 import ConfirmedNote from '../components/ConfirmedNote';
+import Meta from '../components/Meta';
 import StatusSteps from '../components/StatusSteps';
 
 function todayIso(): string {
@@ -53,7 +56,7 @@ export default function SitterAssignmentDetailPage() {
     return (
       <>
         <div className="alert alert-error">{loadError}</div>
-        <Link to="/sitter/assignments">← Nazaj na moja varstva</Link>
+        <BackLink to="/care">Nazaj na moja varstva</BackLink>
       </>
     );
   }
@@ -63,7 +66,7 @@ export default function SitterAssignmentDetailPage() {
 
   return (
     <>
-      <Link to="/sitter/assignments">← Nazaj na moja varstva</Link>
+      <BackLink to="/care">Nazaj na moja varstva</BackLink>
 
       <div className="page-header detail-header">
         <h1>Varstvo</h1>
@@ -82,10 +85,14 @@ export default function SitterAssignmentDetailPage() {
 
       <section className="card section">
         <div className="assignment-main">
-          <strong>📅 {formatPeriod(assignment.startDate, assignment.endDate)}</strong>
-          <span>📍 {assignment.city}</span>
-          <span>👤 Lastnik: {assignment.owner?.displayName}</span>
-          <span className="muted">🪴 {assignment.plants.map((p) => p.name).join(', ')}</span>
+          <Meta icon={CalendarDays} tone="strong">
+            {formatPeriod(assignment.startDate, assignment.endDate)}
+          </Meta>
+          <Meta icon={MapPin}>{assignment.city}</Meta>
+          <Meta icon={UserRound}>Lastnik: {assignment.owner?.displayName}</Meta>
+          <Meta icon={Sprout} tone="muted">
+            {assignment.plants.map((p) => p.name).join(', ')}
+          </Meta>
         </div>
       </section>
 
