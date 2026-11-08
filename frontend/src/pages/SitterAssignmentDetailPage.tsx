@@ -10,6 +10,7 @@ import {
   type Assignment,
 } from '../api/assignments';
 import { getErrorMessages } from '../api/errors';
+import ConfirmedNote from '../components/ConfirmedNote';
 import StatusSteps from '../components/StatusSteps';
 
 function todayIso(): string {
@@ -73,6 +74,7 @@ export default function SitterAssignmentDetailPage() {
 
       {message && <div className="alert alert-success">{message}</div>}
       {actionError && <div className="alert alert-error">{actionError}</div>}
+      <ConfirmedNote assignment={assignment} />
 
       <section className="card section">
         <StatusSteps status={assignment.status} />

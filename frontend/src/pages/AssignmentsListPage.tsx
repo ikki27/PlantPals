@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
+  formatDateTime,
   formatPeriod,
   getMyAssignments,
   STATUS_LABELS,
@@ -57,6 +58,12 @@ export default function AssignmentsListPage() {
                   a.status === 'zahtevano' && (
                     <span className="muted">👥 Kandidati: {a.applicantsCount}</span>
                   )
+                )}
+                {a.status === 'vrnjeno' && (
+                  <span className="error">⚠ Potrdite vrnitev rastlin</span>
+                )}
+                {a.returnConfirmedAt && (
+                  <span className="muted">✓ Potrjeno {formatDateTime(a.returnConfirmedAt)}</span>
                 )}
               </div>
               <span className={`status-badge status-${a.status}`}>{STATUS_LABELS[a.status]}</span>
