@@ -1,16 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { UsersService } from '../users/users.service';
 import { AuthUser, JwtPayload } from './auth-user.interface';
 
-/**
- * Passport strategija: prebere JWT iz glave "Authorization: Bearer <žeton>",
- * preveri podpis in rok veljavnosti ter vrne podatke prijavljenega uporabnika.
- */
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(config: ConfigService) {
+  constructor(
+    config: ConfigService,
+    private readonly usersService: UsersService,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -18,7 +18,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  validate(payload: JwtPayload): AuthUser {
-    return { userId: payload.sub, email: payload.email, roles: payload.roles };
+  async validate(payload: JwtPayload): Promise<AuthUser> {
+    const user = await this.usersService.findById(payload.sub);
+    if (!user) {
+      throw new UnauthorizedException('Neveljavna ali potekla prijava');
+    }
+    return { userId: user.id as string, email: user.email, roles: user.roles };
   }
 }

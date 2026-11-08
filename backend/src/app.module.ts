@@ -4,6 +4,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { RolesGuard } from './auth/guards/roles.guard';
 import { HealthModule } from './health/health.module';
 import { UsersModule } from './users/users.module';
 
@@ -27,6 +28,7 @@ import { UsersModule } from './users/users.module';
   providers: [
     // Vse končne točke so privzeto zaščitene z JWT (izjeme označimo z @Public()).
     { provide: APP_GUARD, useClass: JwtAuthGuard },
+    { provide: APP_GUARD, useClass: RolesGuard },
   ],
 })
 export class AppModule {}
