@@ -24,6 +24,7 @@ export interface Assignment {
   endDate: string;
   status: AssignmentStatus;
   plants: { id: string; name: string }[];
+  plantsCount: number;
   applicantsCount: number;
   createdAt: string;
 }
@@ -42,6 +43,11 @@ export async function createAssignment(data: CreateAssignmentData): Promise<Assi
 
 export async function getMyAssignments(): Promise<Assignment[]> {
   const res = await api.get<Assignment[]>('/assignments/mine');
+  return res.data;
+}
+
+export async function getOpenAssignments(): Promise<Assignment[]> {
+  const res = await api.get<Assignment[]>('/assignments/open');
   return res.data;
 }
 
