@@ -15,6 +15,12 @@ export default function OwnerDashboardPage() {
           Moje rastline
         </Link>
       </div>
+      <div className="card add-role-card">
+        <span>Greste na pot? Poiščite varuha za svoje rastline.</span>
+        <Link to="/owner/requests" className="btn-secondary">
+          Zahteve za varstvo
+        </Link>
+      </div>
       <AddRoleCard role="sitter" />
     </>
   );
