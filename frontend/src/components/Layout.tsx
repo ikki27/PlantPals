@@ -21,6 +21,7 @@ export default function Layout() {
                 Lastnik
               </NavLink>
               <NavLink to="/owner/plants">Moje rastline</NavLink>
+              <NavLink to="/owner/requests">Zahteve</NavLink>
             </>
           )}
           {hasRole(user?.roles, 'sitter') && <NavLink to="/sitter">Varuh</NavLink>}
