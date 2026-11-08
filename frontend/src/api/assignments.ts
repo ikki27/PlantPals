@@ -111,6 +111,13 @@ export function formatDateTime(iso: string): string {
   });
 }
 
+export function plantsLabel(count: number): string {
+  if (count === 1) return '1 rastlina';
+  if (count === 2) return '2 rastlini';
+  if (count === 3 || count === 4) return `${count} rastline`;
+  return `${count} rastlin`;
+}
+
 export function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('sl-SI', { timeZone: 'UTC' });
 }
