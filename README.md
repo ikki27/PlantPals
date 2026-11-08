@@ -20,6 +20,31 @@ Vsaka rastlina ima lastna navodila za oskrbo, med varstvom varuh vodi *dnevnik o
 **Arhitektura:** ločen SPA + REST API. Komunikacija SPA ↔ API poteka prek REST/JSON čez HTTPS, vsaka zahteva nosi JWT v `Authorization` glavi; API ↔ MongoDB prek Mongoose.
  
 ---
+
+## Lokalni zagon
+
+### Predpogoji
+- Node.js 20+
+- Docker Desktop
+
+### 1. Kloniranje
+git clone https://github.com/ikki27/PlantPals.git
+cd PlantPals
+
+### 2. Okoljske spremenljivke
+cp backend/.env.example backend/.env   # nato vpiši JWT_SECRET
+
+### 3. Backend + baza
+docker compose up --build
+API teče na http://localhost:3000
+
+### 4. Frontend
+cd frontend
+npm install
+npm run dev
+Aplikacija teče na http://localhost:5173
+
+---
  
 ## Dokumentacija
  
