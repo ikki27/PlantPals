@@ -1,6 +1,6 @@
 import { useAuth } from '../auth/AuthContext';
+import AddRoleCard from '../components/AddRoleCard';
 
-/** Začetni pogled lastnika. Vsebino dopolnimo pri US-01 (rastline) in US-05 (zahteve). */
 export default function OwnerDashboardPage() {
   const { user } = useAuth();
 
@@ -11,6 +11,7 @@ export default function OwnerDashboardPage() {
       <div className="card">
         Tu bodo kmalu vaše rastline in zahteve za varstvo.
       </div>
+      <AddRoleCard role="sitter" />
     </>
   );
 }

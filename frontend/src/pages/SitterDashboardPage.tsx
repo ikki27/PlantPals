@@ -1,6 +1,6 @@
 import { useAuth } from '../auth/AuthContext';
+import AddRoleCard from '../components/AddRoleCard';
 
-/** Začetni pogled varuha. Vsebino dopolnimo pri US-04 (razpoložljivost) in US-06 (odprte zahteve). */
 export default function SitterDashboardPage() {
   const { user } = useAuth();
 
@@ -12,6 +12,7 @@ export default function SitterDashboardPage() {
         Tu bodo kmalu vaša razpoložljivost in odprte zahteve, ki se ujemajo z
         vami.
       </div>
+      <AddRoleCard role="owner" />
     </>
   );
 }

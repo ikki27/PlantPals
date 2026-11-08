@@ -1,8 +1,7 @@
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
-import { homePathFor } from '../auth/homePath';
+import { hasRole } from '../auth/homePath';
 
-/** Skupna postavitev: zgornja navigacija + vsebina trenutne strani. */
 export default function Layout() {
   const { user, logout } = useAuth();
 
@@ -16,9 +15,10 @@ export default function Layout() {
           <NavLink to="/" end>
             Domov
           </NavLink>
-          {user ? (
-            <NavLink to={homePathFor(user.roles)}>Nadzorna plošča</NavLink>
-          ) : (
+          {hasRole(user?.roles, 'owner') && <NavLink to="/owner">Lastnik</NavLink>}
+          {hasRole(user?.roles, 'sitter') && <NavLink to="/sitter">Varuh</NavLink>}
+          {hasRole(user?.roles, 'admin') && <NavLink to="/admin">Administracija</NavLink>}
+          {!user && (
             <>
               <NavLink to="/register">Registracija</NavLink>
               <NavLink to="/login">Prijava</NavLink>
