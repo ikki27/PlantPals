@@ -5,6 +5,7 @@ import Layout from './components/Layout';
 import AdminUsersPage from './pages/AdminUsersPage';
 import AssignmentFormPage from './pages/AssignmentFormPage';
 import AssignmentsListPage from './pages/AssignmentsListPage';
+import AvailabilityPage from './pages/AvailabilityPage';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import NotFoundPage from './pages/NotFoundPage';
@@ -33,6 +34,7 @@ export default function App() {
           </Route>
           <Route element={<RoleRoute roles={['sitter']} />}>
             <Route path="/sitter" element={<SitterDashboardPage />} />
+            <Route path="/sitter/availability" element={<AvailabilityPage />} />
           </Route>
           <Route element={<RoleRoute roles={['admin']} />}>
             <Route path="/admin" element={<AdminUsersPage />} />
