@@ -34,6 +34,7 @@ export interface PublicAssignment {
   hasApplied: boolean;
   sitter: { id: string; displayName: string } | null;
   owner: { id: string; displayName: string } | null;
+  returnConfirmedAt: Date | null;
   createdAt: Date;
 }
 
@@ -148,6 +149,12 @@ export class AssignmentsService {
 
   async returnCare(id: string, sitterId: string): Promise<PublicAssignment> {
     return this.transition(id, sitterId, AssignmentStatus.Returned);
+  }
+
+  async confirmReturn(id: string, ownerId: string): Promise<PublicAssignment> {
+    return this.transition(id, ownerId, AssignmentStatus.Confirmed, {
+      set: { returnConfirmedAt: new Date() },
+    });
   }
 
   private async transition(
@@ -369,6 +376,7 @@ export class AssignmentsService {
         : false,
       sitter: toUserRef(assignment.sitterId),
       owner: toUserRef(assignment.ownerId),
+      returnConfirmedAt: assignment.returnConfirmedAt ?? null,
       createdAt: assignment.createdAt,
     };
   }
