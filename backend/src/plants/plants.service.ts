@@ -39,6 +39,17 @@ export class PlantsService {
     return this.toPublic(plant);
   }
 
+  async ownsAll(ownerId: string, plantIds: string[]): Promise<boolean> {
+    if (plantIds.some((id) => !isValidObjectId(id))) return false;
+    const count = await this.plantModel
+      .countDocuments({
+        _id: { $in: plantIds },
+        ownerId: new Types.ObjectId(ownerId),
+      })
+      .exec();
+    return count === plantIds.length;
+  }
+
   async create(ownerId: string, dto: PlantDto): Promise<PublicPlant> {
     const plant = await this.plantModel.create({
       ...dto,
