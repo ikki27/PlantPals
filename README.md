@@ -5,24 +5,7 @@
 Vsaka rastlina ima lastna navodila za oskrbo, med varstvom varuh vodi *dnevnik oskrbe*, ob koncu pa lastnik *potrdi vrnitev*, da je zaključek jasen in dokumentiran za obe strani.
  
 ---
- 
-## Ključne funkcionalnosti
- 
-- **Profili rastlin** z navodili za oskrbo (vrsta, pogostost zalivanja, svetlobne potrebe, opombe).
-- **Zahteve za varstvo** za določeno obdobje in lokacijo, z izborom ene ali več rastlin.
-- **Ujemanje** zahtev z varuhi po *lokaciji* in *prekrivanju razpoložljivosti* z zahtevanim obdobjem.
-- **Javljanje in dodelitev varuha** — varuhi se javijo, lastnik izbere; dodelitev je atomarna.
-- **Statusni potek varstva** z nadzorovanimi prehodi: `zahtevano → sprejeto → v teku → vrnjeno → potrjeno` (ter *preklicano* pred začetkom).
-- **Dnevnik oskrbe** — varuh beleži vnose (datum, opravilo, opombe), lastnik jih spremlja.
-- **Potrditev vrnitve** s strani lastnika, ki zaključi varstvo.
-- **Vlogovno ločen dostop** (lastnik / varuh / administrator) z ustreznimi pravicami.
-- **E-poštna obvestila** ob ključnih dogodkih.
-## Uporabniške vloge
- 
-- **Lastnik** — vnaša rastline z navodili, odpira zahteve za varstvo, pregleduje kandidate, spremlja dnevnik, potrdi vrnitev.
-- **Varuh** — nastavi razpoložljivost (obdobje + mesto/regija), pregleduje ujemajoče zahteve, se javi, med varstvom piše dnevnik oskrbe.
-- **Administrator** — upravlja uporabniške račune, moderira vsebino, posreduje pri zastalih varstvih.
- 
+
 ## Uporabljene tehnologije
  
 | Del | Tehnologija |
