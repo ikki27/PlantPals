@@ -37,6 +37,12 @@ export class AssignmentsController {
     return this.assignmentsService.findOpenForSitter(user.userId);
   }
 
+  @Get('sitting')
+  @Roles(UserRole.Sitter)
+  findSitting(@CurrentUser() user: AuthUser) {
+    return this.assignmentsService.findAllForSitter(user.userId);
+  }
+
   @Post(':id/apply')
   @Roles(UserRole.Sitter)
   @HttpCode(HttpStatus.OK)
@@ -61,9 +67,23 @@ export class AssignmentsController {
     return this.assignmentsService.assignSitter(id, user.userId, dto.sitterId);
   }
 
+  @Post(':id/start')
+  @Roles(UserRole.Sitter)
+  @HttpCode(HttpStatus.OK)
+  start(@CurrentUser() user: AuthUser, @Param('id') id: string) {
+    return this.assignmentsService.startCare(id, user.userId);
+  }
+
+  @Post(':id/return')
+  @Roles(UserRole.Sitter)
+  @HttpCode(HttpStatus.OK)
+  returnCare(@CurrentUser() user: AuthUser, @Param('id') id: string) {
+    return this.assignmentsService.returnCare(id, user.userId);
+  }
+
   @Get(':id')
-  @Roles(UserRole.Owner)
+  @Roles(UserRole.Owner, UserRole.Sitter)
   findOne(@CurrentUser() user: AuthUser, @Param('id') id: string) {
-    return this.assignmentsService.findOneForOwner(id, user.userId);
+    return this.assignmentsService.findOneForParticipant(id, user.userId);
   }
 }

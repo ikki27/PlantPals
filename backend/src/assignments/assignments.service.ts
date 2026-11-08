@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -9,6 +10,7 @@ import { isValidObjectId, Model, Types } from 'mongoose';
 import { PlantsService } from '../plants/plants.service';
 import { UsersService } from '../users/users.service';
 import { AssignmentStatus } from './assignment-status.enum';
+import { findTransition, STATUS_LABELS } from './assignment-transitions';
 import { CreateAssignmentDto } from './dto/create-assignment.dto';
 import {
   CareAssignment,
@@ -31,6 +33,7 @@ export interface PublicAssignment {
   applicantsCount: number;
   hasApplied: boolean;
   sitter: { id: string; displayName: string } | null;
+  owner: { id: string; displayName: string } | null;
   createdAt: Date;
 }
 
@@ -48,6 +51,20 @@ type PopulatedUser = {
 };
 
 const NOT_FOUND = 'Zahteva ne obstaja';
+
+const POPULATE_ALL = [
+  { path: 'plantIds', select: 'name' },
+  { path: 'sitterId', select: 'displayName' },
+  { path: 'ownerId', select: 'displayName' },
+];
+
+function toUserRef(
+  ref: unknown,
+): { id: string; displayName: string } | null {
+  const user = ref as PopulatedUser | null;
+  if (!user || user.displayName === undefined) return null;
+  return { id: user._id.toString(), displayName: user.displayName };
+}
 
 @Injectable()
 export class AssignmentsService {
@@ -94,22 +111,106 @@ export class AssignmentsService {
     const assignments = await this.assignmentModel
       .find({ ownerId: new Types.ObjectId(ownerId) })
       .sort({ startDate: 1 })
-      .populate('plantIds', 'name')
-      .populate('sitterId', 'displayName')
+      .populate(POPULATE_ALL)
       .exec();
     return assignments.map((assignment) => this.toPublic(assignment));
   }
 
-  async findOneForOwner(
+  async findAllForSitter(sitterId: string): Promise<PublicAssignment[]> {
+    const assignments = await this.assignmentModel
+      .find({ sitterId: new Types.ObjectId(sitterId) })
+      .sort({ startDate: 1 })
+      .populate(POPULATE_ALL)
+      .exec();
+    return assignments.map((assignment) => this.toPublic(assignment));
+  }
+
+  async findOneForParticipant(
     id: string,
-    ownerId: string,
+    userId: string,
   ): Promise<PublicAssignment> {
-    const assignment = await this.findOwnedOrThrow(id, ownerId);
-    await assignment.populate([
-      { path: 'plantIds', select: 'name' },
-      { path: 'sitterId', select: 'displayName' },
-    ]);
-    return this.toPublic(assignment);
+    const assignment = await this.findParticipantOrThrow(id, userId);
+    await assignment.populate(POPULATE_ALL);
+    return this.toPublic(assignment, userId);
+  }
+
+  async startCare(id: string, sitterId: string): Promise<PublicAssignment> {
+    return this.transition(id, sitterId, AssignmentStatus.InProgress, {
+      guard: (assignment) => {
+        if (new Date() < assignment.startDate) {
+          throw new ConflictException(
+            `Varstvo se lahko začne šele na dan začetka (${assignment.startDate.toLocaleDateString('sl-SI', { timeZone: 'UTC' })})`,
+          );
+        }
+      },
+    });
+  }
+
+  async returnCare(id: string, sitterId: string): Promise<PublicAssignment> {
+    return this.transition(id, sitterId, AssignmentStatus.Returned);
+  }
+
+  private async transition(
+    id: string,
+    userId: string,
+    to: AssignmentStatus,
+    options: {
+      guard?: (assignment: CareAssignmentDocument) => void;
+      set?: Record<string, unknown>;
+    } = {},
+  ): Promise<PublicAssignment> {
+    const existing = await this.findParticipantOrThrow(id, userId);
+    const rule = findTransition(existing.status, to);
+    if (!rule) {
+      throw new ConflictException(
+        `Prehod iz »${STATUS_LABELS[existing.status]}« v »${STATUS_LABELS[to]}« ni dovoljen`,
+      );
+    }
+
+    const userObjectId = new Types.ObjectId(userId);
+    const allowed =
+      rule.actor === 'owner'
+        ? existing.ownerId.equals(userObjectId)
+        : (existing.sitterId?.equals(userObjectId) ?? false);
+    if (!allowed) {
+      throw new ForbiddenException('Za to spremembo statusa nimate pravic');
+    }
+
+    options.guard?.(existing);
+
+    const updated = await this.assignmentModel
+      .findOneAndUpdate(
+        { _id: existing._id, status: existing.status },
+        { $set: { status: to, ...options.set } },
+        { new: true },
+      )
+      .populate(POPULATE_ALL)
+      .exec();
+
+    if (!updated) {
+      throw new ConflictException('Status varstva se je medtem spremenil');
+    }
+    return this.toPublic(updated, userId);
+  }
+
+  private async findParticipantOrThrow(
+    id: string,
+    userId: string,
+  ): Promise<CareAssignmentDocument> {
+    if (!isValidObjectId(id)) {
+      throw new NotFoundException(NOT_FOUND);
+    }
+    const userObjectId = new Types.ObjectId(userId);
+    const assignment = await this.assignmentModel
+      .findOne({
+        _id: id,
+        $or: [{ ownerId: userObjectId }, { sitterId: userObjectId }],
+      })
+      .exec();
+    if (!assignment) {
+      throw new NotFoundException(NOT_FOUND);
+    }
+    return assignment;
   }
 
   async findApplicants(id: string, ownerId: string): Promise<Applicant[]> {
@@ -153,8 +254,7 @@ export class AssignmentsService {
         },
         { new: true },
       )
-      .populate('plantIds', 'name')
-      .populate('sitterId', 'displayName')
+      .populate(POPULATE_ALL)
       .exec();
 
     if (!updated) {
@@ -255,12 +355,6 @@ export class AssignmentsService {
       .filter((plant) => plant && plant.name !== undefined)
       .map((plant) => ({ id: plant._id.toString(), name: plant.name }));
 
-    const sitterRef = assignment.sitterId as unknown as PopulatedUser | null;
-    const sitter =
-      sitterRef && sitterRef.displayName !== undefined
-        ? { id: sitterRef._id.toString(), displayName: sitterRef.displayName }
-        : null;
-
     return {
       id: assignment.id as string,
       city: assignment.city,
@@ -273,7 +367,8 @@ export class AssignmentsService {
       hasApplied: viewerId
         ? assignment.applicants.some((a) => a.toString() === viewerId)
         : false,
-      sitter,
+      sitter: toUserRef(assignment.sitterId),
+      owner: toUserRef(assignment.ownerId),
       createdAt: assignment.createdAt,
     };
   }
