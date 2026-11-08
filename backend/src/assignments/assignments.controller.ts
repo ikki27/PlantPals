@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+} from '@nestjs/common';
 import type { AuthUser } from '../auth/auth-user.interface';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -26,5 +34,12 @@ export class AssignmentsController {
   @Roles(UserRole.Sitter)
   findOpen(@CurrentUser() user: AuthUser) {
     return this.assignmentsService.findOpenForSitter(user.userId);
+  }
+
+  @Post(':id/apply')
+  @Roles(UserRole.Sitter)
+  @HttpCode(HttpStatus.OK)
+  apply(@CurrentUser() user: AuthUser, @Param('id') id: string) {
+    return this.assignmentsService.apply(id, user.userId);
   }
 }
