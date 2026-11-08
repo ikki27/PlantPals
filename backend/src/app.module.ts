@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { HealthModule } from './health/health.module';
+import { PlantsModule } from './plants/plants.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -24,6 +25,7 @@ import { UsersModule } from './users/users.module';
     HealthModule,
     UsersModule,
     AuthModule,
+    PlantsModule,
   ],
   providers: [
     // Vse končne točke so privzeto zaščitene z JWT (izjeme označimo z @Public()).
