@@ -1,6 +1,11 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { isValidObjectId, Model, Types } from 'mongoose';
 import { PlantsService } from '../plants/plants.service';
 import { UsersService } from '../users/users.service';
 import { AssignmentStatus } from './assignment-status.enum';
@@ -24,10 +29,13 @@ export interface PublicAssignment {
   plants: AssignmentPlant[];
   plantsCount: number;
   applicantsCount: number;
+  hasApplied: boolean;
   createdAt: Date;
 }
 
 type PopulatedPlant = { _id: Types.ObjectId; name: string };
+
+const NOT_FOUND = 'Zahteva ne obstaja';
 
 @Injectable()
 export class AssignmentsService {
@@ -103,10 +111,52 @@ export class AssignmentsService {
       .populate('plantIds', 'name')
       .exec();
 
-    return assignments.map((assignment) => this.toPublic(assignment));
+    return assignments.map((assignment) =>
+      this.toPublic(assignment, sitterId),
+    );
   }
 
-  private toPublic(assignment: CareAssignmentDocument): PublicAssignment {
+  async apply(id: string, sitterId: string): Promise<PublicAssignment> {
+    if (!isValidObjectId(id)) {
+      throw new NotFoundException(NOT_FOUND);
+    }
+    const sitterObjectId = new Types.ObjectId(sitterId);
+
+    const updated = await this.assignmentModel
+      .findOneAndUpdate(
+        {
+          _id: id,
+          status: AssignmentStatus.Requested,
+          ownerId: { $ne: sitterObjectId },
+          applicants: { $ne: sitterObjectId },
+        },
+        { $addToSet: { applicants: sitterObjectId } },
+        { new: true },
+      )
+      .populate('plantIds', 'name')
+      .exec();
+
+    if (updated) {
+      return this.toPublic(updated, sitterId);
+    }
+
+    const existing = await this.assignmentModel.findById(id).exec();
+    if (!existing) {
+      throw new NotFoundException(NOT_FOUND);
+    }
+    if (existing.ownerId.equals(sitterObjectId)) {
+      throw new BadRequestException('Na svojo zahtevo se ne morete javiti');
+    }
+    if (existing.applicants.some((a) => a.equals(sitterObjectId))) {
+      throw new ConflictException('Na to zahtevo ste se že javili');
+    }
+    throw new ConflictException('Zahteva ni več odprta za javljanje');
+  }
+
+  private toPublic(
+    assignment: CareAssignmentDocument,
+    viewerId?: string,
+  ): PublicAssignment {
     const plants = (assignment.plantIds as unknown as PopulatedPlant[])
       .filter((plant) => plant && plant.name !== undefined)
       .map((plant) => ({ id: plant._id.toString(), name: plant.name }));
@@ -120,6 +170,9 @@ export class AssignmentsService {
       plants,
       plantsCount: assignment.plantIds.length,
       applicantsCount: assignment.applicants.length,
+      hasApplied: viewerId
+        ? assignment.applicants.some((a) => a.toString() === viewerId)
+        : false,
       createdAt: assignment.createdAt,
     };
   }
