@@ -30,6 +30,7 @@ export default function Layout() {
                 Varuh
               </NavLink>
               <NavLink to="/sitter/availability">Razpoložljivost</NavLink>
+              <NavLink to="/sitter/requests">Odprte zahteve</NavLink>
             </>
           )}
           {hasRole(user?.roles, 'admin') && <NavLink to="/admin">Administracija</NavLink>}
