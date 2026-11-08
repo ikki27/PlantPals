@@ -28,6 +28,7 @@ export interface Assignment {
   applicantsCount: number;
   hasApplied: boolean;
   sitter: { id: string; displayName: string } | null;
+  owner: { id: string; displayName: string } | null;
   createdAt: string;
 }
 
@@ -76,6 +77,21 @@ export async function getApplicants(id: string): Promise<Applicant[]> {
 
 export async function assignSitter(id: string, sitterId: string): Promise<Assignment> {
   const res = await api.post<Assignment>(`/assignments/${id}/assign`, { sitterId });
+  return res.data;
+}
+
+export async function getSittingAssignments(): Promise<Assignment[]> {
+  const res = await api.get<Assignment[]>('/assignments/sitting');
+  return res.data;
+}
+
+export async function startCare(id: string): Promise<Assignment> {
+  const res = await api.post<Assignment>(`/assignments/${id}/start`);
+  return res.data;
+}
+
+export async function returnCare(id: string): Promise<Assignment> {
+  const res = await api.post<Assignment>(`/assignments/${id}/return`);
   return res.data;
 }
 

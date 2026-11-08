@@ -15,6 +15,8 @@ import OwnerDashboardPage from './pages/OwnerDashboardPage';
 import PlantFormPage from './pages/PlantFormPage';
 import PlantsListPage from './pages/PlantsListPage';
 import RegisterPage from './pages/RegisterPage';
+import SitterAssignmentDetailPage from './pages/SitterAssignmentDetailPage';
+import SitterAssignmentsPage from './pages/SitterAssignmentsPage';
 import SitterDashboardPage from './pages/SitterDashboardPage';
 
 export default function App() {
@@ -39,6 +41,8 @@ export default function App() {
             <Route path="/sitter" element={<SitterDashboardPage />} />
             <Route path="/sitter/availability" element={<AvailabilityPage />} />
             <Route path="/sitter/requests" element={<OpenAssignmentsPage />} />
+            <Route path="/sitter/assignments" element={<SitterAssignmentsPage />} />
+            <Route path="/sitter/assignments/:id" element={<SitterAssignmentDetailPage />} />
           </Route>
           <Route element={<RoleRoute roles={['admin']} />}>
             <Route path="/admin" element={<AdminUsersPage />} />

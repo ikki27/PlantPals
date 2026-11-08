@@ -10,6 +10,7 @@ import {
   type Assignment,
 } from '../api/assignments';
 import { getErrorMessages } from '../api/errors';
+import StatusSteps from '../components/StatusSteps';
 
 export default function AssignmentDetailPage() {
   const { id = '' } = useParams();
@@ -75,6 +76,10 @@ export default function AssignmentDetailPage() {
 
       {message && <div className="alert alert-success">{message}</div>}
       {actionError && <div className="alert alert-error">{actionError}</div>}
+
+      <section className="card section">
+        <StatusSteps status={assignment.status} />
+      </section>
 
       <section className="card section">
         <div className="assignment-main">
