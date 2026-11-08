@@ -356,6 +356,13 @@ a.btn-primary {
   gap: 0.3rem;
 }
 
+.assignment-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
 .status-badge {
   padding: 0.25rem 0.7rem;
   border-radius: 999px;
