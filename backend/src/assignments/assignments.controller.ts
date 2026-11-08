@@ -81,6 +81,13 @@ export class AssignmentsController {
     return this.assignmentsService.returnCare(id, user.userId);
   }
 
+  @Post(':id/confirm')
+  @Roles(UserRole.Owner)
+  @HttpCode(HttpStatus.OK)
+  confirm(@CurrentUser() user: AuthUser, @Param('id') id: string) {
+    return this.assignmentsService.confirmReturn(id, user.userId);
+  }
+
   @Get(':id')
   @Roles(UserRole.Owner, UserRole.Sitter)
   findOne(@CurrentUser() user: AuthUser, @Param('id') id: string) {
