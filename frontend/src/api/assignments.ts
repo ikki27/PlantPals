@@ -29,6 +29,7 @@ export interface Assignment {
   hasApplied: boolean;
   sitter: { id: string; displayName: string } | null;
   owner: { id: string; displayName: string } | null;
+  returnConfirmedAt: string | null;
   createdAt: string;
 }
 
@@ -93,6 +94,21 @@ export async function startCare(id: string): Promise<Assignment> {
 export async function returnCare(id: string): Promise<Assignment> {
   const res = await api.post<Assignment>(`/assignments/${id}/return`);
   return res.data;
+}
+
+export async function confirmReturn(id: string): Promise<Assignment> {
+  const res = await api.post<Assignment>(`/assignments/${id}/confirm`);
+  return res.data;
+}
+
+export function formatDateTime(iso: string): string {
+  return new Date(iso).toLocaleString('sl-SI', {
+    day: 'numeric',
+    month: 'numeric',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 }
 
 export function formatDate(iso: string): string {
