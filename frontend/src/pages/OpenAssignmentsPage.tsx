@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { formatPeriod, getOpenAssignments, type Assignment } from '../api/assignments';
+import {
+  applyToAssignment,
+  formatPeriod,
+  getOpenAssignments,
+  type Assignment,
+} from '../api/assignments';
 import { getErrorMessages } from '../api/errors';
 import { useAuth } from '../auth/AuthContext';
 
@@ -15,12 +20,27 @@ export default function OpenAssignmentsPage() {
   const { user } = useAuth();
   const [assignments, setAssignments] = useState<Assignment[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [applyingId, setApplyingId] = useState<string | null>(null);
+  const [cardErrors, setCardErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     getOpenAssignments()
       .then(setAssignments)
       .catch((err) => setError(getErrorMessages(err)[0]));
   }, []);
+
+  async function handleApply(id: string) {
+    setApplyingId(id);
+    setCardErrors((e) => ({ ...e, [id]: '' }));
+    try {
+      const updated = await applyToAssignment(id);
+      setAssignments((list) => list?.map((a) => (a.id === id ? updated : a)) ?? null);
+    } catch (err) {
+      setCardErrors((e) => ({ ...e, [id]: getErrorMessages(err)[0] }));
+    } finally {
+      setApplyingId(null);
+    }
+  }
 
   return (
     <>
@@ -48,6 +68,27 @@ export default function OpenAssignmentsPage() {
                 <strong>📅 {formatPeriod(a.startDate, a.endDate)}</strong>
                 <span>📍 {a.city}</span>
                 <span className="muted">🪴 {plantsLabel(a.plantsCount)}</span>
+                {cardErrors[a.id] && <small className="error">{cardErrors[a.id]}</small>}
+              </div>
+
+              <div className="assignment-actions">
+                {a.hasApplied ? (
+                  <>
+                    <span className="status-badge status-potrjeno">✓ Ste med kandidati</span>
+                    <button type="button" className="btn-secondary" disabled>
+                      Javljeni
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    className="btn-primary btn-inline"
+                    onClick={() => handleApply(a.id)}
+                    disabled={applyingId === a.id}
+                  >
+                    {applyingId === a.id ? 'Javljam ...' : 'Javi se'}
+                  </button>
+                )}
               </div>
             </div>
           ))}
