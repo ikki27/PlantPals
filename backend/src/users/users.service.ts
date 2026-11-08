@@ -36,6 +36,17 @@ export class UsersService {
     return this.userModel.findById(id).exec();
   }
 
+  findAll(): Promise<UserDocument[]> {
+    return this.userModel.find().sort({ createdAt: -1 }).exec();
+  }
+
+  addRole(id: string, role: UserRole): Promise<UserDocument | null> {
+    if (!isValidObjectId(id)) return Promise.resolve(null);
+    return this.userModel
+      .findByIdAndUpdate(id, { $addToSet: { roles: role } }, { new: true })
+      .exec();
+  }
+
   create(data: CreateUserData): Promise<UserDocument> {
     return this.userModel.create(data);
   }
