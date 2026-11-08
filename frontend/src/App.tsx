@@ -7,6 +7,8 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import NotFoundPage from './pages/NotFoundPage';
 import OwnerDashboardPage from './pages/OwnerDashboardPage';
+import PlantFormPage from './pages/PlantFormPage';
+import PlantsListPage from './pages/PlantsListPage';
 import RegisterPage from './pages/RegisterPage';
 import SitterDashboardPage from './pages/SitterDashboardPage';
 
@@ -21,6 +23,9 @@ export default function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<RoleRoute roles={['owner']} />}>
             <Route path="/owner" element={<OwnerDashboardPage />} />
+            <Route path="/owner/plants" element={<PlantsListPage />} />
+            <Route path="/owner/plants/new" element={<PlantFormPage />} />
+            <Route path="/owner/plants/:id/edit" element={<PlantFormPage />} />
           </Route>
           <Route element={<RoleRoute roles={['sitter']} />}>
             <Route path="/sitter" element={<SitterDashboardPage />} />

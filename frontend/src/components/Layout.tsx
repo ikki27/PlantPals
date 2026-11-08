@@ -15,7 +15,14 @@ export default function Layout() {
           <NavLink to="/" end>
             Domov
           </NavLink>
-          {hasRole(user?.roles, 'owner') && <NavLink to="/owner">Lastnik</NavLink>}
+          {hasRole(user?.roles, 'owner') && (
+            <>
+              <NavLink to="/owner" end>
+                Lastnik
+              </NavLink>
+              <NavLink to="/owner/plants">Moje rastline</NavLink>
+            </>
+          )}
           {hasRole(user?.roles, 'sitter') && <NavLink to="/sitter">Varuh</NavLink>}
           {hasRole(user?.roles, 'admin') && <NavLink to="/admin">Administracija</NavLink>}
           {!user && (
