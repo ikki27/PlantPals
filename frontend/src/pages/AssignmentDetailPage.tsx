@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import {
   assignSitter,
+  confirmReturn,
   formatPeriod,
   getApplicants,
   getAssignment,
@@ -10,6 +11,7 @@ import {
   type Assignment,
 } from '../api/assignments';
 import { getErrorMessages } from '../api/errors';
+import ConfirmedNote from '../components/ConfirmedNote';
 import StatusSteps from '../components/StatusSteps';
 
 export default function AssignmentDetailPage() {
@@ -21,6 +23,7 @@ export default function AssignmentDetailPage() {
   const [actionError, setActionError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [assigningId, setAssigningId] = useState<string | null>(null);
+  const [confirming, setConfirming] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -51,6 +54,20 @@ export default function AssignmentDetailPage() {
     }
   }
 
+  async function handleConfirm() {
+    setConfirming(true);
+    setActionError(null);
+    setMessage(null);
+    try {
+      setAssignment(await confirmReturn(id));
+    } catch (err) {
+      setActionError(getErrorMessages(err)[0]);
+      await load();
+    } finally {
+      setConfirming(false);
+    }
+  }
+
   if (loadError) {
     return (
       <>
@@ -76,10 +93,25 @@ export default function AssignmentDetailPage() {
 
       {message && <div className="alert alert-success">{message}</div>}
       {actionError && <div className="alert alert-error">{actionError}</div>}
+      <ConfirmedNote assignment={assignment} />
 
       <section className="card section">
         <StatusSteps status={assignment.status} />
       </section>
+
+      {assignment.status === 'vrnjeno' && (
+        <section className="card section add-role-card">
+          <span>Varuh je zaključil oskrbo. Ko prevzamete rastline, potrdite vrnitev.</span>
+          <button
+            type="button"
+            className="btn-primary btn-inline"
+            onClick={handleConfirm}
+            disabled={confirming}
+          >
+            {confirming ? 'Potrjujem ...' : 'Potrdi vrnitev'}
+          </button>
+        </section>
+      )}
 
       <section className="card section">
         <div className="assignment-main">
