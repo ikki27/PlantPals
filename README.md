@@ -24,25 +24,48 @@ Vsaka rastlina ima lastna navodila za oskrbo, med varstvom varuh vodi *dnevnik o
 ## Lokalni zagon
 
 ### Predpogoji
-- Node.js 20+
-- Docker Desktop
+- [Node.js](https://nodejs.org/) 20+ (z npm)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (mora biti zagnan)
+- Git
 
 ### 1. Kloniranje
+```bash
 git clone https://github.com/ikki27/PlantPals.git
 cd PlantPals
+```
 
 ### 2. Okoljske spremenljivke
-cp backend/.env.example backend/.env   # nato vpiši JWT_SECRET
+```bash
+cp backend/.env.example backend/.env     # nato v backend/.env vpiši svoj JWT_SECRET
+cp frontend/.env.example frontend/.env
+```
 
-### 3. Backend + baza
+### 3. Backend + baza (Docker)
+```bash
 docker compose up --build
-API teče na http://localhost:3000
+```
+- API teče na http://localhost:3000/api
+- Preverjanje delovanja: http://localhost:3000/api/health → `{"status":"ok","database":"connected", ...}`
+- MongoDB teče na `localhost:27017`
 
-### 4. Frontend
+Ustavitev: `Ctrl + C` oziroma `docker compose down`.
+
+### 4. Frontend (v novem terminalu)
+```bash
 cd frontend
 npm install
 npm run dev
-Aplikacija teče na http://localhost:5173
+```
+Aplikacija teče na http://localhost:5173. Na začetni strani piše **»API deluje, baza: connected«**, če je backend pravilno zagnan.
+
+### Alternativa: backend brez Dockerja (za razvoj)
+Če želiš backend poganjati lokalno s samodejnim ponovnim nalaganjem ob spremembah kode:
+```bash
+docker compose up -d mongo   # v Dockerju zaženi samo bazo
+cd backend
+npm install
+npm run start:dev
+```
 
 ---
  
