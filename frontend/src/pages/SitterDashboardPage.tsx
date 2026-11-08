@@ -19,6 +19,12 @@ export default function SitterDashboardPage() {
           Razpoložljivost
         </Link>
       </div>
+      <div className="card add-role-card">
+        <span>Poglejte zahteve, ki se ujemajo z vašo lokacijo in razpoložljivostjo.</span>
+        <Link to="/sitter/requests" className="btn-secondary">
+          Odprte zahteve
+        </Link>
+      </div>
       <AddRoleCard role="owner" />
     </>
   );
