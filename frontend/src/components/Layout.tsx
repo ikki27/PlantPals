@@ -12,6 +12,8 @@ export default function Layout() {
           <NavLink to="/" end>
             Domov
           </NavLink>
+          <NavLink to="/register">Registracija</NavLink>
+          <NavLink to="/login">Prijava</NavLink>
         </nav>
       </header>
       <main>
