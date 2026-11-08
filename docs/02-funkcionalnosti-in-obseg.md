@@ -30,6 +30,7 @@ Nima pravic: ne piše vnosov dnevnika v imenu varuha; ne spreminja navodil za os
 11. Opomnik za oskrbo glede na navodila rastline (npr. opomnik varuhu, kdaj je čas za zalivanje).
 12. Administracija sistema - upravljanje računov, moderiranje vsebine in posredovanje pri zastalih varstvih.
 13. Preklic zahteve ali varstva pred začetkom, z ustreznim prehodom statusa.
+14. E-poštna obvestila ob ključnih dogodkih (MVP)
 
 # Kasnejše nadgradnje
 
