@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { PlantsService } from '../plants/plants.service';
+import { UsersService } from '../users/users.service';
 import { AssignmentStatus } from './assignment-status.enum';
 import { CreateAssignmentDto } from './dto/create-assignment.dto';
 import {
@@ -21,6 +22,7 @@ export interface PublicAssignment {
   endDate: Date;
   status: AssignmentStatus;
   plants: AssignmentPlant[];
+  plantsCount: number;
   applicantsCount: number;
   createdAt: Date;
 }
@@ -33,6 +35,7 @@ export class AssignmentsService {
     @InjectModel(CareAssignment.name)
     private readonly assignmentModel: Model<CareAssignment>,
     private readonly plantsService: PlantsService,
+    private readonly usersService: UsersService,
   ) {}
 
   async create(
@@ -76,6 +79,33 @@ export class AssignmentsService {
     return assignments.map((assignment) => this.toPublic(assignment));
   }
 
+  async findOpenForSitter(sitterId: string): Promise<PublicAssignment[]> {
+    const sitter = await this.usersService.findById(sitterId);
+    const city = sitter?.city?.trim();
+    if (!sitter || !city || sitter.availability.length === 0) {
+      return [];
+    }
+
+    const fitsAnyWindow = sitter.availability.map((window) => ({
+      startDate: { $gte: window.from },
+      endDate: { $lte: window.to },
+    }));
+
+    const assignments = await this.assignmentModel
+      .find({
+        status: AssignmentStatus.Requested,
+        ownerId: { $ne: new Types.ObjectId(sitterId) },
+        city,
+        $or: fitsAnyWindow,
+      })
+      .collation({ locale: 'sl', strength: 2 })
+      .sort({ startDate: 1 })
+      .populate('plantIds', 'name')
+      .exec();
+
+    return assignments.map((assignment) => this.toPublic(assignment));
+  }
+
   private toPublic(assignment: CareAssignmentDocument): PublicAssignment {
     const plants = (assignment.plantIds as unknown as PopulatedPlant[])
       .filter((plant) => plant && plant.name !== undefined)
@@ -88,6 +118,7 @@ export class AssignmentsService {
       endDate: assignment.endDate,
       status: assignment.status,
       plants,
+      plantsCount: assignment.plantIds.length,
       applicantsCount: assignment.applicants.length,
       createdAt: assignment.createdAt,
     };

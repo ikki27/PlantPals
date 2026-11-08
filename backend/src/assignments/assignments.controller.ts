@@ -21,4 +21,10 @@ export class AssignmentsController {
   findMine(@CurrentUser() user: AuthUser) {
     return this.assignmentsService.findAllForOwner(user.userId);
   }
+
+  @Get('open')
+  @Roles(UserRole.Sitter)
+  findOpen(@CurrentUser() user: AuthUser) {
+    return this.assignmentsService.findOpenForSitter(user.userId);
+  }
 }
